@@ -11,13 +11,15 @@ import {
   Activity,
   Cpu,
   Lock,
-  Unlock
+  Unlock,
+  KeyRound,
+  LogOut
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useSound } from '../context/SoundContext';
 
-export const Navbar = ({ onOpenCommandPalette }) => {
-  const { isAuthenticated, user, toggleAuth } = useAuth();
+export const Navbar = ({ onOpenCommandPalette, onOpenJwtInspector }) => {
+  const { isAuthenticated, user, tokenStatus, tokenDetails, logout } = useAuth();
   const { soundEnabled, toggleSound, playSound } = useSound();
   const [timeStr, setTimeStr] = useState('');
   const navigate = useNavigate();
@@ -32,13 +34,20 @@ export const Navbar = ({ onOpenCommandPalette }) => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleAuthToggle = () => {
-    playSound('click');
-    toggleAuth();
+  const handleLogout = () => {
+    playSound('delete');
+    logout();
+    navigate('/login');
+  };
+
+  const formatRemainingTime = (seconds) => {
+    if (!seconds || seconds <= 0) return 'EXP';
+    const mins = Math.floor(seconds / 60);
+    return `${mins}m`;
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full glass-panel border-b border-cyan-500/20 bg-slate-950/70 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 w-full glass-panel border-b border-cyan-500/20 bg-slate-950/75 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         
         {/* Left: Brand Identity */}
@@ -56,14 +65,14 @@ export const Navbar = ({ onOpenCommandPalette }) => {
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-orbitron font-extrabold text-base tracking-widest text-slate-100 group-hover:text-cyan-400 transition-colors">
-                  SYNAPSE<span className="text-cyan-400 font-mono">_OS</span>
+                  AEGIS<span className="text-cyan-400 font-mono">_OS</span>
                 </span>
                 <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-cyan-950/60 border border-cyan-500/30 text-cyan-300">
-                  A-6 ROUTING
+                  A-7 AUTH
                 </span>
               </div>
               <p className="text-[10px] font-mono text-slate-400 hidden sm:block">
-                QUANTUM TASK ORCHESTRATOR
+                AUTONOMOUS SECURITY & TASK MATRIX
               </p>
             </div>
           </Link>
@@ -74,7 +83,7 @@ export const Navbar = ({ onOpenCommandPalette }) => {
           {/* Live System Chronometer */}
           <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900/60 border border-cyan-500/15 text-xs font-mono text-cyan-300">
             <Activity className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
-            <span>SYS_TIME: {timeStr || '18:56:00'}</span>
+            <span>SYS_TIME: {timeStr || '19:45:00'}</span>
             <span className="text-[10px] text-slate-500">| UTC+5:30</span>
           </div>
 
@@ -94,7 +103,7 @@ export const Navbar = ({ onOpenCommandPalette }) => {
           </button>
         </div>
 
-        {/* Right: Sound, Auth Clearance, Quick Action */}
+        {/* Right: Sound, JWT Inspector Trigger, Auth Clearance */}
         <div className="flex items-center gap-2.5">
           {/* Sound Synthesizer Toggle */}
           <button
@@ -109,37 +118,62 @@ export const Navbar = ({ onOpenCommandPalette }) => {
             {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
           </button>
 
-          {/* Protected Route Auth State Pill */}
-          <div className="relative group">
+          {/* JWT Token Status Pill (Clickable Inspector) */}
+          {isAuthenticated && (
             <button
-              onClick={handleAuthToggle}
-              title={`Click to ${isAuthenticated ? 'Lock (Logout)' : 'Unlock (Login)'} Protected Routes`}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-mono transition-all ${
-                isAuthenticated 
-                  ? 'bg-emerald-950/30 border-emerald-500/40 text-emerald-300 hover:bg-emerald-900/30' 
-                  : 'bg-rose-950/30 border-rose-500/40 text-rose-300 hover:bg-rose-900/30'
-              }`}
+              onClick={() => {
+                playSound('click');
+                onOpenJwtInspector();
+              }}
+              title="Inspect Simulated JWT Token & Expiration"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-950/40 border border-purple-500/40 hover:bg-purple-900/40 text-purple-300 text-xs font-mono transition-all group"
             >
-              {isAuthenticated ? (
-                <>
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className="hidden sm:inline font-semibold">Sohan Ghosh [L5]</span>
-                  <span className="text-[10px] uppercase bg-emerald-900/50 px-1 py-0.5 rounded border border-emerald-500/30">
-                    AUTH ACTIVE
-                  </span>
-                  <Unlock className="w-3 h-3 text-emerald-400" />
-                </>
-              ) : (
-                <>
-                  <ShieldAlert className="w-3.5 h-3.5 text-rose-400 animate-pulse" />
-                  <span className="hidden lg:inline">GUEST MODE</span>
-                  <span className="text-[10px] uppercase bg-rose-900/50 px-1 py-0.5 rounded border border-rose-500/30">
-                    LOCKED
-                  </span>
-                  <Lock className="w-3 h-3 text-rose-400" />
-                </>
-              )}
+              <KeyRound className="w-3.5 h-3.5 text-purple-400 group-hover:rotate-45 transition-transform" />
+              <span>JWT:</span>
+              <span className="font-bold text-emerald-400">
+                {tokenDetails ? formatRemainingTime(tokenDetails.remainingSeconds) : 'ACTIVE'}
+              </span>
             </button>
+          )}
+
+          {/* Protected Route Auth State Pill */}
+          <div className="relative flex items-center gap-1.5">
+            {isAuthenticated ? (
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => {
+                    playSound('click');
+                    onOpenJwtInspector();
+                  }}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-emerald-500/40 bg-emerald-950/30 text-emerald-300 hover:bg-emerald-900/30 text-xs font-mono transition-all"
+                  title="Operative Clearance Active - Click to Inspect Token"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className="hidden sm:inline font-semibold">Sohan Ghosh</span>
+                  <span className="text-[10px] uppercase bg-emerald-900/50 px-1 py-0.5 rounded border border-emerald-500/30">
+                    [L5]
+                  </span>
+                </button>
+
+                <button
+                  onClick={handleLogout}
+                  title="Logout & Revoke Token"
+                  className="p-1.5 rounded-xl border border-rose-500/30 bg-rose-950/30 text-rose-300 hover:bg-rose-900/40 transition-all"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                onClick={() => playSound('click')}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-rose-500/40 bg-rose-950/30 text-rose-300 hover:bg-rose-900/30 text-xs font-mono transition-all"
+              >
+                <ShieldAlert className="w-3.5 h-3.5 text-rose-400 animate-pulse" />
+                <span>LOGIN REQUIRED</span>
+                <Lock className="w-3 h-3 text-rose-400" />
+              </Link>
+            )}
           </div>
 
           {/* Quick Add Task Button */}

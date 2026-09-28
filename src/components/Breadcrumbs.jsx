@@ -12,7 +12,7 @@ export const Breadcrumbs = () => {
     return (
       <div className="flex items-center gap-2 text-xs font-mono text-cyan-400/80 mb-6 py-1 px-3 bg-cyan-950/20 border border-cyan-800/30 rounded-lg w-fit">
         <Home className="w-3.5 h-3.5 text-cyan-400" />
-        <span>SYNAPSE // MAIN HUB // DASHBOARD</span>
+        <span>AEGIS // PROTECTED MAIN HUB // DASHBOARD</span>
       </div>
     );
   }

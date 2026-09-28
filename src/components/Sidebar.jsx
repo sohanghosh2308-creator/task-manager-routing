@@ -9,13 +9,18 @@ import {
   RotateCcw,
   Sparkles,
   Layers,
-  Flame
+  Flame,
+  KeyRound,
+  LogOut,
+  UserCheck
 } from 'lucide-react';
 import { useTasks } from '../context/TaskContext';
+import { useAuth } from '../context/AuthContext';
 import { useSound } from '../context/SoundContext';
 
-export const Sidebar = () => {
+export const Sidebar = ({ onOpenJwtInspector }) => {
   const { stats, resetToDefaults } = useTasks();
+  const { isAuthenticated, user, tokenDetails, logout } = useAuth();
   const { playSound } = useSound();
 
   const navItems = [
@@ -23,14 +28,16 @@ export const Sidebar = () => {
       to: '/',
       label: 'Dashboard',
       icon: LayoutDashboard,
-      badge: null,
-      sublabel: 'Mission Control'
+      badge: 'PROT',
+      badgeColor: 'border-cyan-500/40 text-cyan-300 bg-cyan-950/40',
+      sublabel: 'Protected HUD'
     },
     {
       to: '/tasks',
       label: 'Tasks Explorer',
       icon: ListTodo,
       badge: stats.total,
+      badgeColor: 'border-cyan-500/30 text-cyan-400 bg-cyan-950/40',
       sublabel: 'Full Directory'
     },
     {
@@ -39,7 +46,7 @@ export const Sidebar = () => {
       icon: PlusCircle,
       badge: 'PROT',
       badgeColor: 'border-purple-500/40 text-purple-300 bg-purple-950/40',
-      sublabel: 'Protected Route'
+      sublabel: 'Protected Form'
     },
     {
       to: '/completed',
@@ -51,10 +58,13 @@ export const Sidebar = () => {
     },
     {
       to: '/login',
-      label: 'Access Gate',
+      label: 'Security Terminal',
       icon: Shield,
-      badge: null,
-      sublabel: 'Biometric Auth'
+      badge: isAuthenticated ? 'AUTH' : 'LOGIN',
+      badgeColor: isAuthenticated 
+        ? 'border-emerald-500/40 text-emerald-300 bg-emerald-950/40' 
+        : 'border-rose-500/40 text-rose-300 bg-rose-950/40',
+      sublabel: 'JWT & Clearance'
     }
   ];
 
@@ -69,7 +79,7 @@ export const Sidebar = () => {
               <Layers className="w-3 h-3 text-cyan-400" />
               SYSTEM MODULES
             </span>
-            <span className="text-[10px] font-mono text-slate-500">v2.6</span>
+            <span className="text-[10px] font-mono text-slate-500">v2.7-AUTH</span>
           </div>
 
           <nav className="space-y-1.5">
@@ -105,7 +115,7 @@ export const Sidebar = () => {
                       </div>
 
                       {item.badge !== null && (
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${item.badgeColor || 'border-cyan-500/30 text-cyan-400 bg-cyan-950/40'}`}>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${item.badgeColor}`}>
                           {item.badge}
                         </span>
                       )}
@@ -116,6 +126,64 @@ export const Sidebar = () => {
             })}
           </nav>
         </div>
+
+        {/* Operative Security Card */}
+        {isAuthenticated ? (
+          <div className="p-3.5 rounded-2xl border border-cyan-500/30 bg-cyan-950/20 backdrop-blur-md space-y-2.5">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center font-orbitron font-extrabold text-xs text-slate-950 shadow-glow-cyan">
+                SG
+              </div>
+              <div className="min-w-0 flex-1">
+                <span className="text-xs font-orbitron font-bold text-white block truncate">
+                  Sohan Ghosh
+                </span>
+                <span className="text-[10px] font-mono text-cyan-300 block truncate">
+                  Chief Security Architect
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-1 border-t border-cyan-500/20 text-[10px] font-mono">
+              <span className="text-slate-400">Clearance:</span>
+              <span className="text-emerald-400 font-semibold">Alpha [L5]</span>
+            </div>
+
+            <div className="flex items-center gap-2 pt-1">
+              <button
+                onClick={() => {
+                  playSound('click');
+                  onOpenJwtInspector();
+                }}
+                className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-slate-900 border border-cyan-500/30 text-cyan-300 hover:border-cyan-400 text-[10px] font-mono transition-colors"
+                title="Inspect Simulated JWT Token"
+              >
+                <KeyRound className="w-3 h-3 text-cyan-400" />
+                <span>JWT Inspector</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  playSound('delete');
+                  logout();
+                }}
+                className="p-1.5 rounded-lg bg-rose-950/40 border border-rose-500/30 text-rose-300 hover:bg-rose-900/40 transition-colors"
+                title="Logout"
+              >
+                <LogOut className="w-3 h-3" />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="p-3.5 rounded-2xl border border-rose-500/30 bg-rose-950/15 backdrop-blur-md space-y-2">
+            <span className="text-xs font-mono font-bold text-rose-300 block">
+              OPERATIVE LOCKED
+            </span>
+            <p className="text-[11px] font-sans text-slate-400">
+              Clearance required to unlock Protected Dashboard and Mission Control.
+            </p>
+          </div>
+        )}
 
         {/* Priority Status Widget */}
         <div className="p-3.5 rounded-xl border border-rose-500/20 bg-rose-950/10 backdrop-blur-md">
@@ -147,7 +215,7 @@ export const Sidebar = () => {
         
         <div className="pt-2 text-center">
           <p className="text-[9px] font-mono text-slate-400">
-            SYNAPSE OS // ASSIGNMENT 6
+            AEGIS OS // ASSIGNMENT 7
           </p>
         </div>
       </div>

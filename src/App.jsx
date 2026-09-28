@@ -15,6 +15,13 @@ import { CompletedTasks } from './pages/CompletedTasks';
 import { Login } from './pages/Login';
 import { NotFound } from './pages/NotFound';
 
+/**
+ * AEGIS // High-Tech Authentication & Quantum Task Matrix
+ * Assignment 7 Architecture:
+ * - Nested Routes with RootLayout
+ * - Protected Dashboard & Protected Application Routes with JWT Verification
+ * - Public Access Gate (/login)
+ */
 function App() {
   return (
     <HashRouter>
@@ -22,18 +29,40 @@ function App() {
         <AuthProvider>
           <TaskProvider>
             <Routes>
-              {/* Nested Routes with RootLayout container and <Outlet /> */}
+              {/* Nested Routes with RootLayout container */}
               <Route path="/" element={<RootLayout />}>
-                {/* 1. Dashboard Page */}
-                <Route index element={<Dashboard />} />
+                
+                {/* 1. Protected Dashboard Page (Assignment 7 Core Requirement) */}
+                <Route 
+                  index 
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  } 
+                />
 
-                {/* 2. Tasks Page (with URL query parameters) */}
-                <Route path="tasks" element={<Tasks />} />
+                {/* 2. Protected Tasks Explorer Page */}
+                <Route 
+                  path="tasks" 
+                  element={
+                    <ProtectedRoute>
+                      <Tasks />
+                    </ProtectedRoute>
+                  } 
+                />
 
-                {/* 3. Task Details Page (Dynamic Route with URL Parameter :taskId) */}
-                <Route path="tasks/:taskId" element={<TaskDetails />} />
+                {/* 3. Protected Task Details Page (Dynamic Route :taskId) */}
+                <Route 
+                  path="tasks/:taskId" 
+                  element={
+                    <ProtectedRoute>
+                      <TaskDetails />
+                    </ProtectedRoute>
+                  } 
+                />
 
-                {/* 4. Add Task Page (Protected Route Basic) */}
+                {/* 4. Protected Add Task Page */}
                 <Route 
                   path="add-task" 
                   element={
@@ -43,10 +72,17 @@ function App() {
                   } 
                 />
 
-                {/* 5. Completed Tasks Page */}
-                <Route path="completed" element={<CompletedTasks />} />
+                {/* 5. Protected Completed Tasks Archive Page */}
+                <Route 
+                  path="completed" 
+                  element={
+                    <ProtectedRoute>
+                      <CompletedTasks />
+                    </ProtectedRoute>
+                  } 
+                />
 
-                {/* Access / Biometric Clearance Terminal */}
+                {/* Public Access & Authentication Gate */}
                 <Route path="login" element={<Login />} />
 
                 {/* 404 Route Not Found */}

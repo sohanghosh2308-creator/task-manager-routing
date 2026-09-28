@@ -1,5 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 
+/**
+ * High-Tech, Simple and Sweet Cybernetic Ambient Background
+ * Soft stardust particles with gentle interactive synaptic webs,
+ * calming ambient radial glows, and high-readability aesthetics.
+ */
 export const CyberBackground = () => {
   const canvasRef = useRef(null);
 
@@ -19,15 +24,19 @@ export const CyberBackground = () => {
 
     window.addEventListener('resize', handleResize);
 
-    // Particle nodes configuration
-    const particleCount = Math.min(Math.floor((width * height) / 18000), 75);
+    // Particle nodes configuration (clean, calm density)
+    const particleCount = Math.min(Math.floor((width * height) / 22000), 65);
     const particles = [];
-    const colors = ['rgba(0, 240, 255, ', 'rgba(168, 85, 247, ', 'rgba(16, 185, 129, '];
+    const colors = [
+      'rgba(0, 240, 255, ',    // Cyan
+      'rgba(168, 85, 247, ',   // Violet
+      'rgba(52, 211, 153, '    // Emerald
+    ];
 
     const mouse = {
       x: null,
       y: null,
-      radius: 140
+      radius: 120
     };
 
     const handleMouseMove = (e) => {
@@ -47,20 +56,20 @@ export const CyberBackground = () => {
       particles.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        radius: Math.random() * 2 + 1,
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: (Math.random() - 0.5) * 0.35,
+        radius: Math.random() * 1.8 + 1,
         color: colors[Math.floor(Math.random() * colors.length)],
-        baseAlpha: Math.random() * 0.4 + 0.2
+        baseAlpha: Math.random() * 0.35 + 0.15
       });
     }
 
     const render = () => {
       ctx.clearRect(0, 0, width, height);
 
-      // Draw subtle grid points
-      const gridSize = 60;
-      ctx.fillStyle = 'rgba(56, 189, 248, 0.03)';
+      // Draw subtle high-tech matrix grid points (very soft, sweet opacity)
+      const gridSize = 64;
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.025)';
       for (let x = 0; x < width; x += gridSize) {
         for (let y = 0; y < height; y += gridSize) {
           ctx.fillRect(x, y, 1.5, 1.5);
@@ -71,65 +80,65 @@ export const CyberBackground = () => {
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
 
-        // Move
+        // Smooth drift
         p.x += p.vx;
         p.y += p.vy;
 
-        // Bounce edges
+        // Soft bounce at boundaries
         if (p.x < 0 || p.x > width) p.vx *= -1;
         if (p.y < 0 || p.y > height) p.vy *= -1;
 
-        // Mouse interaction (gentle repulsion)
+        // Gentle interactive mouse attraction/repulsion
         if (mouse.x !== null && mouse.y !== null) {
           const dx = mouse.x - p.x;
           const dy = mouse.y - p.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
           if (dist < mouse.radius) {
             const force = (mouse.radius - dist) / mouse.radius;
-            p.x -= (dx / dist) * force * 2.5;
-            p.y -= (dy / dist) * force * 2.5;
+            p.x -= (dx / dist) * force * 1.5;
+            p.y -= (dy / dist) * force * 1.5;
           }
         }
 
-        // Draw particle
+        // Draw glowing particle node
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fillStyle = `${p.color}${p.baseAlpha})`;
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = p.color === colors[0] ? '#00f0ff' : '#a855f7';
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = p.color.includes('240') ? '#00f0ff' : '#a855f7';
         ctx.fill();
         ctx.shadowBlur = 0;
 
-        // Connect nearby particles
+        // Connect nearby particles with subtle synaptic web
         for (let j = i + 1; j < particles.length; j++) {
           const p2 = particles[j];
           const dx = p.x - p2.x;
           const dy = p.y - p2.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
 
-          if (dist < 120) {
-            const alpha = (1 - dist / 120) * 0.18;
+          if (dist < 115) {
+            const alpha = (1 - dist / 115) * 0.14;
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
             ctx.strokeStyle = `rgba(0, 240, 255, ${alpha})`;
-            ctx.lineWidth = 0.8;
+            ctx.lineWidth = 0.75;
             ctx.stroke();
           }
         }
 
-        // Connect to mouse if near
+        // Connect to mouse cursor with soft violet trail
         if (mouse.x !== null && mouse.y !== null) {
           const dx = p.x - mouse.x;
-          const dy = p.y - mouse.y;
+          const dy = mouse.y - mouse.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 110) {
-            const alpha = (1 - dist / 110) * 0.35;
+          if (dist < 100) {
+            const alpha = (1 - dist / 100) * 0.25;
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(mouse.x, mouse.y);
             ctx.strokeStyle = `rgba(168, 85, 247, ${alpha})`;
-            ctx.lineWidth = 1;
+            ctx.lineWidth = 0.9;
             ctx.stroke();
           }
         }
@@ -150,16 +159,16 @@ export const CyberBackground = () => {
 
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-      {/* Ambient glowing radial orbs */}
-      <div className="absolute -top-40 -right-40 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse-slow"></div>
-      <div className="absolute top-1/2 -left-48 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-3xl"></div>
-      <div className="absolute -bottom-40 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
+      {/* Soothing ambient glowing radial orbs - sweet and modern */}
+      <div className="absolute -top-32 -right-32 w-[480px] h-[480px] bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/3 -left-40 w-[520px] h-[520px] bg-purple-600/10 rounded-full blur-[130px] pointer-events-none" />
+      <div className="absolute -bottom-32 right-1/4 w-[420px] h-[420px] bg-emerald-500/08 rounded-full blur-[120px] pointer-events-none" />
       
-      {/* Sci-Fi Canvas */}
+      {/* Interactive Stardust Canvas */}
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
       
-      {/* Subtle Scanline Overlay */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%)] bg-[length:100%_4px] opacity-40"></div>
+      {/* Ultra-subtle scanline grid overlay */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,24,0)_50%,rgba(0,0,0,0.18)_50%)] bg-[length:100%_4px] opacity-25"></div>
     </div>
   );
 };

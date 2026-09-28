@@ -108,7 +108,7 @@ export const TaskProvider = ({ children }) => {
   const { playSound } = useSound();
   const [tasks, setTasks] = useState(() => {
     try {
-      const saved = localStorage.getItem('synapse_tasks_list') || localStorage.getItem('nexus_tasks_list');
+      const saved = localStorage.getItem('aegis_tasks_list') || localStorage.getItem('synapse_tasks_list');
       if (saved) {
         return JSON.parse(saved);
       }
@@ -122,7 +122,7 @@ export const TaskProvider = ({ children }) => {
 
   useEffect(() => {
     try {
-      localStorage.setItem('synapse_tasks_list', JSON.stringify(tasks));
+      localStorage.setItem('aegis_tasks_list', JSON.stringify(tasks));
     } catch {
       // ignore
     }

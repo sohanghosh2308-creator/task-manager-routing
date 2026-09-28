@@ -4,21 +4,21 @@ const SoundContext = createContext();
 
 export const SoundProvider = ({ children }) => {
   const [soundEnabled, setSoundEnabled] = useState(() => {
-    const saved = localStorage.getItem('synapse_sound_enabled') || localStorage.getItem('nexus_sound_enabled');
+    const saved = localStorage.getItem('aegis_sound_enabled') || localStorage.getItem('synapse_sound_enabled');
     return saved !== null ? JSON.parse(saved) : true;
   });
 
   const [volume, setVolume] = useState(() => {
-    const saved = localStorage.getItem('synapse_sound_volume') || localStorage.getItem('nexus_sound_volume');
+    const saved = localStorage.getItem('aegis_sound_volume') || localStorage.getItem('synapse_sound_volume');
     return saved !== null ? parseFloat(saved) : 0.25;
   });
 
   useEffect(() => {
-    localStorage.setItem('synapse_sound_enabled', JSON.stringify(soundEnabled));
+    localStorage.setItem('aegis_sound_enabled', JSON.stringify(soundEnabled));
   }, [soundEnabled]);
 
   useEffect(() => {
-    localStorage.setItem('synapse_sound_volume', volume.toString());
+    localStorage.setItem('aegis_sound_volume', volume.toString());
   }, [volume]);
 
   // Audio Context synthesizer
