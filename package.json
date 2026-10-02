@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://Sohan231001102178.github.io/task-manager-routing",
+  "homepage": "https://sohanghosh2308-creator.github.io/task-manager-routing",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
